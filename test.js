@@ -41,7 +41,8 @@ import { O_wav_file } from "./O_wav_file.module.js";
 
 import { decode } from "https://deno.land/x/pngs/mod.ts";
 
-const file = await Deno.readFile("./polaralignment.png");
+var s_path_file_image = "./fractal.png";
+const file = await Deno.readFile(s_path_file_image);
 
 var o_file_png = decode(file);
 
@@ -57,7 +58,7 @@ o_wav_file.f_create_from_array(
     44100,//n_samples_per_second_per_channel,
     a_n__data, //
 );
-await o_wav_file.f_write_file("./polaralignment.png.wav")
+await o_wav_file.f_write_file(s_path_file_image+'.wav')
 // var n_i_channel = 0;
 // Math.max.apply(null,a.subarray(5, 7));
 // var n_max_amp_found = Math.max.apply(null,o_wav_file.a_n__data);
