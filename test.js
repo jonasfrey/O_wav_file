@@ -41,7 +41,7 @@ import { O_wav_file } from "./O_wav_file.module.js";
 
 import { decode } from "https://deno.land/x/pngs/mod.ts";
 
-var s_path_file_image = "./wav_files/Moire-Pattern-High-Res.png";
+var s_path_file_image = "./circles.png";
 const file = await Deno.readFile(s_path_file_image);
 
 var o_file_png = decode(file);
