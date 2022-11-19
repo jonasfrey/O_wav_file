@@ -95,6 +95,8 @@ class O_file_header{
         a_o_byte_offset_property, 
     ){
         this.a_o_byte_offset_property = a_o_byte_offset_property;
+        this.n_file_header_end_byte_index = 44;
+
     }
     f_set_dataview_and_define_property(
         o_dataview_a_nu8, 
@@ -146,11 +148,10 @@ class O_wav_file{
         this.a_n__data = "please call 'await o_wav_file.f_read_file(s_path_file)'";
         this.a_n__header = "please call 'await o_wav_file.f_read_file(s_path_file)'";
         this.a_n_u8 = "please call 'await o_wav_file.f_read_file(s_path_file)'";
-        this.n_file_header_end_byte_index = 44;
     }
     async f_read_file(
         s_path_file,
-        b_slower_but_convinient
+        b_slower_but_convinient = false
         ){
         this.s_path_file = s_path_file;
         // const o_file = await Deno.open(s_path_file);
@@ -160,7 +161,6 @@ class O_wav_file{
         this.o_file_header = o_file_header;
         console.log(this.o_file_header);
 
-        this.a_n_u8__header = new Uint8Array(new DataView(this.a_n_u8.buffer, 0, this.n_file_header_end_byte_index).buffer)
 
         if(this.o_file_header.bits_per_sample > 16){
             // there is no Uint24Array
@@ -208,27 +208,29 @@ class O_wav_file{
     ){
         
         var n_bits_per_sample = a_n__data.BYTES_PER_ELEMENT*8;
-        var o_file_header = this.f_o_file_header();
-        var a_n_u8__header = o_file_header.f_a_n_u8();
-        o_file_header.n_channels = n_channels;
-        o_file_header.n_bits_per_sample = n_bits_per_sample;
-        o_file_header.n_samples_per_second_per_channel = n_samples_per_second_per_channel;
-        o_file_header.n_bits_per_sample_times_channels = n_bits_per_sample * n_channels;
-        o_file_header.n_samples_per_second_per_channel_times_bits_per_sample_times_channel__dividedby8 =
+        this.o_file_header = this.f_o_file_header();
+        var a_n_u8__header = this.o_file_header.f_a_n_u8();
+        this.o_file_header.n_channels = n_channels;
+        this.o_file_header.n_bits_per_sample = n_bits_per_sample;
+        this.o_file_header.n_samples_per_second_per_channel = n_samples_per_second_per_channel;
+        this.o_file_header.n_bits_per_sample_times_channels = n_bits_per_sample * n_channels;
+        this.o_file_header.n_samples_per_second_per_channel_times_bits_per_sample_times_channel__dividedby8 =
             (n_samples_per_second_per_channel * n_bits_per_sample * n_channels) /8; 
         
         var a_n_u8__data = new Uint8Array(a_n__data.buffer);
         var a_n_u8__header_and_data = new Uint8Array(a_n_u8__header.length + a_n_u8__data.length);
         a_n_u8__header_and_data.set(a_n_u8__header);
         a_n_u8__header_and_data.set(a_n_u8__data, a_n_u8__header.length);
-        o_file_header.n_data_size_in_bytes = a_n_u8__data.length;
-        o_file_header.n_file_size_in_bytes_minus_8_bytes = a_n_u8__header_and_data.length-8;
-        console.log(o_file_header)
+        this.o_file_header.n_data_size_in_bytes = a_n_u8__data.length;
+        this.o_file_header.n_file_size_in_bytes_minus_8_bytes = a_n_u8__header_and_data.length-8;
+        console.log(this.o_file_header)
         this.a_n_u8 = a_n_u8__header_and_data;
     
     }
 
-    async f_write_file(s_path_file, b_slower_but_convinient){
+    async f_write_file(s_path_file, b_slower_but_convinient = false){
+        this.a_n_u8__header = new Uint8Array(new DataView(this.a_n_u8.buffer, 0, this.n_file_header_end_byte_index).buffer)
+
         if(this.a_a_n_sample__channels != undefined){
             b_slower_but_convinient = true;
         }

@@ -6,30 +6,58 @@ md*/
 import { O_wav_file } from "./O_wav_file.module.js";
 //```
 
-//md ## read/open file
-//```javascript
+// //md ## read/open file
+// //```javascript
+// var o_wav_file = new O_wav_file();
+// var s_path_file = "./wav_files/ImperialMarch60.wav"
+// var s_path_file = "./wav_files/wav5196.wav"
+// var s_path_file = "./wav_files/classical.wav"
+// var b_slower_but_convinient = true;
+// await o_wav_file.f_read_file(s_path_file, b_slower_but_convinient);
+// //```
+
+// //md ## change data
+// //md for example: mute one channel
+// //md if we know that it is a stereo file and we just want to change the right channel for example
+// //```javascript
+// var n_left = 0;
+// var n_right = 1;
+// var n_i_channel = n_right;
+// for(var n_i_sample = 0; n_i_sample < o_wav_file.a_a_n_sample__channels[n_i_channel].length; n_i_sample+=1){
+//     o_wav_file.a_a_n_sample__channels[n_i_channel][n_i_sample] = 0;
+// } 
+// o_wav_file.f_write_file(s_path_file.split(".").slice(0, -1).join('.')+('_out.wav'));
+// //```
+
+
+//md ## convert image into wav file
+
+// import JPEG from "https://deno.land/x/jpeg/mod.ts";
+
+// const img = await Deno.readFile("./wav_files/alvan-nee-ZCHj_2lJP00-unsplash.jpg");
+// const raw = JPEG.decode(img);
+
+// console.log(img);
+
+import { decode } from "https://deno.land/x/pngs/mod.ts";
+
+const file = await Deno.readFile("./polaralignment.png");
+
+var o_file_png = decode(file);
+
+console.log(o_file_png);
+var a_n__data = new Int8Array(o_file_png.image.buffer);
+
+console.log(a_n__data);
+
 var o_wav_file = new O_wav_file();
-var s_path_file = "./wav_files/ImperialMarch60.wav"
-var s_path_file = "./wav_files/wav5196.wav"
-var s_path_file = "./wav_files/classical.wav"
-var b_slower_but_convinient = true;
-await o_wav_file.f_read_file(s_path_file, b_slower_but_convinient);
-//```
-
-//md ## change data
-//md for example: mute one channel
-//md if we know that it is a stereo file and we just want to change the right channel for example
-//```javascript
-var n_left = 0;
-var n_right = 1;
-var n_i_channel = n_right;
-for(var n_i_sample = 0; n_i_sample < o_wav_file.a_a_n_sample__channels[n_i_channel].length; n_i_sample+=1){
-    o_wav_file.a_a_n_sample__channels[n_i_channel][n_i_sample] = 0;
-} 
-o_wav_file.f_write_file(s_path_file.split(".").slice(0, -1).join('.')+('_out.wav'));
-//```
-
- 
+o_wav_file.f_create_from_array(
+    1,//n_channels,
+    8,//n_bits_per_sample, 
+    44100,//n_samples_per_second_per_channel,
+    a_n__data, //
+);
+await o_wav_file.f_write_file("./polaralignment.png.wav")
 // var n_i_channel = 0;
 // Math.max.apply(null,a.subarray(5, 7));
 // var n_max_amp_found = Math.max.apply(null,o_wav_file.a_n__data);
