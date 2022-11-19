@@ -14,12 +14,12 @@ var s_path_file = "./wav_files/wav5196.wav"
 var s_path_file = "./wav_files/classical.wav"
 var b_slower_but_convinient = true;
 await o_wav_file.f_read_file(s_path_file, b_slower_but_convinient);
-console.log(o_wav_file) 
-console.log(o_wav_file.o_file_header)
+//```
+
 //md ## change data
-//md for example: normalize loudness/amplitude
-console.log(o_wav_file.a_a_n_sample__channels)
-// if we know that it is a stereo file and we just want to change the right channel for example
+//md for example: mute one channel
+//md if we know that it is a stereo file and we just want to change the right channel for example
+//```javascript
 var n_left = 0;
 var n_right = 1;
 var n_i_channel = n_right;
@@ -27,9 +27,9 @@ for(var n_i_sample = 0; n_i_sample < o_wav_file.a_a_n_sample__channels[n_i_chann
     o_wav_file.a_a_n_sample__channels[n_i_channel][n_i_sample] = 0;
 } 
 o_wav_file.f_write_file(s_path_file.split(".").slice(0, -1).join('.')+('_out.wav'));
+//```
 
-
-//```javascript 
+ 
 // var n_i_channel = 0;
 // Math.max.apply(null,a.subarray(5, 7));
 // var n_max_amp_found = Math.max.apply(null,o_wav_file.a_n__data);
@@ -53,18 +53,14 @@ o_wav_file.f_write_file(s_path_file.split(".").slice(0, -1).join('.')+('_out.wav
 //     }
 // }
 // console.log(o_wav_file.a_n__data)
-//```
 
-//md ## save as new file 
-//```javascript 
+
+
+ 
 // o_wav_file.f_write_file(s_path_file.split(".").slice(0, -1).join('.')+('_out.wav'));
 
 // { ...  _s_riff_mark: "RIFF",  _n_file_size_in_bytes_minus_8_bytes: 2646036,  _s_wave_mark: "WAVE",  _s_fmt_mark: "fmt ",  _n_fmt_chunk_size: 16,  _n_compression_code: 1,  _n_number_of_channels: 1,  _n_samples_per_second_per_channel: 22050,  _n_samples_per_second_per_channel_times_bits_per_sample_times_channel__dividedby8: 44100,  _n_bits_per_sample_times_channels: 2,  _n_bits_per_sample: 16,  _s_data_mark: "data",_n_data_size_in_bytes: 2646000 }
-//```
 
-//md ## generate png from wav file
-//md additionally a png file can be generated 
-//md from a wave file !
 
 
 // var o_png = await  f_create_png(
