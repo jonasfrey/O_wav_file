@@ -1,6 +1,145 @@
 
 import { O_byte_offset_property, O_file } from "./classes.module.js";
-let f_o_file__wav__from_a_n_u8 = function(
+
+let f_o_file__wav__decode_a_n_u8__wav = [
+    new O_byte_offset_property(
+        's_riff_mark',
+        4 * 8,
+        'string', 
+        false,
+        "RIFF",
+        true, 
+        null
+    ), 
+    new O_byte_offset_property(
+        'n_file_size_in_bytes_minus_8_bytes',
+        4 * 8,
+        'integer',
+        true,
+        0,
+        false, 
+        null
+    ), 
+    new O_byte_offset_property(
+        's_wave_mark',
+        4 * 8,
+        'string',
+        false,
+        "WAVE",
+        true, 
+        null
+    ), 
+    new O_byte_offset_property(
+        's_fmt_mark',
+        4 * 8,
+        'string',
+        false,
+        "fmt ",
+        true, 
+        null 
+    ), 
+    new O_byte_offset_property(
+        'n_fmt_chunk_size',
+        4 * 8,
+        'integer',
+        false,
+        16,// 16 for pcm
+        false, 
+        null
+    ), 
+    new O_byte_offset_property(
+        'n_compression_code',
+        2 * 8,
+        'integer',
+        false,
+        1,
+        false, 
+        null
+    ),
+    new O_byte_offset_property(
+        'n_channels',
+        2 * 8,
+        'integer',
+        false,
+        1,
+        false, 
+        null
+    ),
+    new O_byte_offset_property(
+        'n_samples_per_second_per_channel',
+        4 * 8,
+        'integer',
+        false,
+        22050,
+        false, 
+        null
+    ),
+    new O_byte_offset_property(
+        'n_samples_per_second_per_channel_times_bits_per_sample_times_channel__dividedby8',
+        4 * 8,
+        'integer',
+        false,
+        (22050*16*1)/8,
+        false, 
+        null
+    ),
+    new O_byte_offset_property(
+        'n_bits_per_sample_times_channels',
+        2 * 8,
+        'integer',
+        false,
+        16*1,
+        false, 
+        null
+    ),
+    new O_byte_offset_property(
+        'n_bits_per_sample',
+        2 * 8,
+        'integer',
+        false,
+        16,
+        false, 
+        null
+    ),
+    new O_byte_offset_property(
+        's_data_mark',
+        4 * 8,
+        'string',
+        false,
+        "data",
+        true, 
+        null
+    ),
+    new O_byte_offset_property(
+        'n_data_size_in_bytes',
+        4 * 8,
+        'integer',
+        false,
+        0,
+        false, 
+        null
+    ),
+];
+let f_o_file__wav__encode_a_n_u8 = function(
+    a_n_u8
+){
+    let o_file__wav = new O_file(
+        'wav file', 
+        'a file containing raw audio data', 
+        ['.wav'], 
+        [
+            'audio/wav',
+            'audio/vnd.wave',
+            'audio/wave',
+            'audio/x-pn-wav',
+            'audio/x-wav',
+        ],
+        a_n_u8,
+        f_o_file__wav__decode_a_n_u8__wav,
+    );
+}
+
+let f_o_file__wav__decode_a_n_u8 = function(
     a_n_u8
 ){
 
@@ -16,125 +155,7 @@ let f_o_file__wav__from_a_n_u8 = function(
             'audio/x-wav',
         ],
         a_n_u8,
-        [
-            new O_byte_offset_property(
-                's_riff_mark',
-                4 * 8,
-                'string', 
-                false,
-                "RIFF",
-                true, 
-                null
-            ), 
-            new O_byte_offset_property(
-                'n_file_size_in_bytes_minus_8_bytes',
-                4 * 8,
-                'integer',
-                true,
-                0,
-                false, 
-                null
-            ), 
-            new O_byte_offset_property(
-                's_wave_mark',
-                4 * 8,
-                'string',
-                false,
-                "WAVE",
-                true, 
-                null
-            ), 
-            new O_byte_offset_property(
-                's_fmt_mark',
-                4 * 8,
-                'string',
-                false,
-                "fmt ",
-                true, 
-                null 
-            ), 
-            new O_byte_offset_property(
-                'n_fmt_chunk_size',
-                4 * 8,
-                'integer',
-                false,
-                16,// 16 for pcm
-                false, 
-                null
-            ), 
-            new O_byte_offset_property(
-                'n_compression_code',
-                2 * 8,
-                'integer',
-                false,
-                1,
-                false, 
-                null
-            ),
-            new O_byte_offset_property(
-                'n_channels',
-                2 * 8,
-                'integer',
-                false,
-                1,
-                false, 
-                null
-            ),
-            new O_byte_offset_property(
-                'n_samples_per_second_per_channel',
-                4 * 8,
-                'integer',
-                false,
-                22050,
-                false, 
-                null
-            ),
-            new O_byte_offset_property(
-                'n_samples_per_second_per_channel_times_bits_per_sample_times_channel__dividedby8',
-                4 * 8,
-                'integer',
-                false,
-                (22050*16*1)/8,
-                false, 
-                null
-            ),
-            new O_byte_offset_property(
-                'n_bits_per_sample_times_channels',
-                2 * 8,
-                'integer',
-                false,
-                16*1,
-                false, 
-                null
-            ),
-            new O_byte_offset_property(
-                'n_bits_per_sample',
-                2 * 8,
-                'integer',
-                false,
-                16,
-                false, 
-                null
-            ),
-            new O_byte_offset_property(
-                's_data_mark',
-                4 * 8,
-                'string',
-                false,
-                "data",
-                true, 
-                null
-            ),
-            new O_byte_offset_property(
-                'n_data_size_in_bytes',
-                4 * 8,
-                'integer',
-                false,
-                0,
-                false, 
-                null
-            ),
-        ]
+        f_o_file__wav__decode_a_n_u8__wav,
     );
 
     let O_typed_array = (o_file__wav.n_bits_per_sample > 16) ? Int32Array : Int16Array;
@@ -216,7 +237,8 @@ let f_o_file__wav__from_a_n_u8 = function(
 }
 
 let a_n_u8 = await Deno.readFile("./wav_files/ImperialMarch60.wav");
-let o_file__wav = f_o_file__wav__from_a_n_u8(a_n_u8);
+let o_file__wav = f_o_file__wav__decode_a_n_u8(a_n_u8);
+
 console.log(o_file__wav.a_a_n_rms1000samples__channels)
 
 import { createCanvas } from "https://deno.land/x/canvas/mod.ts";
