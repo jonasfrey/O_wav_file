@@ -1,6 +1,15 @@
 
 import { O_byte_offset_property, O_file, O_file__wav} from "./classes.module.js";
 
+let o_mod_canvas = null; 
+let f_o_canvas = null;
+if('Deno' in window){
+    // import {  createCanvas } from "https://deno.land/x/canvas/mod.ts";
+    o_mod_canvas = await import("https://deno.land/x/canvas/mod.ts")
+    f_o_canvas = o_mod_canvas.createCanvas;
+}else{
+    f_o_canvas = document.createElement("canvas");
+}
 let f_o_file__wav__decode_a_n_u8__wav = [
     new O_byte_offset_property(
         's_riff_mark',
@@ -241,7 +250,6 @@ let f_o_file__wav__decode_a_n_u8 = function(
 
 // console.log(o_file__wav.a_a_n_rms1000samples__channels)
 
-import {  createCanvas } from "https://deno.land/x/canvas/mod.ts";
 
 
 let f_s_data_url_image__from_o_file__wav = async function(
@@ -253,7 +261,7 @@ let f_s_data_url_image__from_o_file__wav = async function(
 ){
 
 
-    const o_canvas = createCanvas(n_scl_x_px, n_scl_y_px);
+    const o_canvas = f_o_canvas(n_scl_x_px, n_scl_y_px);
     const o_ctx = o_canvas.getContext("2d");
 
     o_ctx.fillStyle = "red";
@@ -278,7 +286,7 @@ let f_s_data_url_image__from_o_file__wav = async function(
 
     }
 
-    await Deno.writeFile("melol.png", o_canvas.toBuffer());
+    // await Deno.writeFile("melol.png", o_canvas.toBuffer());
 
 }
 //f_s_data_url_image__from_o_file__wav(o_file__wav, 0.0, .08, 1000, 200);
@@ -356,7 +364,7 @@ let f_fetch_a_n_u8 = async function(
     s_url
 ){
     return new Promise(
-        (f_res)=>{
+        (f_resolve)=>{
             fetch(s_url).then(
                 o_resp =>{
                     console.log("is the data here already on my local machine?") // here
@@ -364,7 +372,7 @@ let f_fetch_a_n_u8 = async function(
         
                     o_resp.arrayBuffer().then(
                         (o_buffer)=>{
-                            return f_resolve(new Uint8Array());
+                            return f_resolve(new Uint8Array(o_buffer));
                         }
                     );
                     
@@ -415,28 +423,34 @@ let f_test = async function(){
 
     // console.log(o_file__wav.o_file.a_n_u8)
     // console.log(o_file__wav.n_file_size_in_bytes_minus_8_bytes)
-    await Deno.writeFile("test.wav", o_file__wav.o_file.a_n_u8, { mode: 0o644 });
+    // await Deno.writeFile("test.wav", o_file__wav.o_file.a_n_u8, { mode: 0o644 });
 }
 
-let f_o_file__wav__decode_from_a_n_u8_url = async function(s_url){
-    return f_fetch_a_n_u8(s_url).then(
-        (a_n_u8) =>{
-            let s_name_file = s_url.split("/").pop();
-        
-            let o_file__wav = new O_file__wav(s_name_file);
-            o_file__wav.o_file.a_n_u8 = a_n_u8
-            return o_file__wav
-        }
-    )
-}
-let f_o_file__wav__decode_from_a_n_u8_file = function(
-    a_n_u8__file, 
+let f_o_file__wav__from_a_n_u8__after_header = function(
+    a_n_u8__after_header, 
     s_name_file = ''
 ){
     let o_file__wav = new O_file__wav(s_name_file);
-    o_file__wav.o_file.a_n_u8 = a_n_u8__file
+    o_file__wav.o_file.a_n_u8__after_header = a_n_u8__after_header
     return o_file__wav
 }
+let f_o_file__wav__from_a_n_u8 = function(
+    a_n_u8, 
+    s_name_file = ''
+){
+    let o_file__wav = new O_file__wav(s_name_file);
+    o_file__wav.o_file.a_n_u8 = a_n_u8
+    return o_file__wav
+}
+let f_o_file__wav__from_a_n_u8__fetch_from_s_url = async function(s_url){
+    return f_fetch_a_n_u8(s_url).then(
+        (a_n_u8) =>{
+            let s_name_file = s_url.split("/").pop();
+            return f_o_file__wav__from_a_n_u8(a_n_u8, s_name_file)
+        }
+    )
+}
+
 let f_o_image_from_o_file__wav = async function(
     o_file__wav, 
     n_aspect_ratio_x, 
@@ -450,7 +464,7 @@ let f_o_image_from_o_file__wav = async function(
     n_x = Math.ceil(n_x);
     n_y = Math.ceil(n_y);
     
-    const o_canvas = createCanvas(n_x, n_y);
+    const o_canvas = f_o_canvas(n_x, n_y);
     const o_ctx = o_canvas.getContext("2d");
 
     let  f_draw_text_outlined = function(o_ctx, s_text, n_x, n_y) {
@@ -478,26 +492,32 @@ let f_o_image_from_o_file__wav = async function(
         36
     )
 
-    await Deno.writeFile(`${new Date().getTime()}_${s_name_file}_${n_aspect_ratio_x}to${n_aspect_ratio_y}.png`, o_canvas.toBuffer());
+    // await Deno.writeFile(`${new Date().getTime()}_${s_name_file}_${n_aspect_ratio_x}to${n_aspect_ratio_y}.png`, o_canvas.toBuffer());
 
 }
 
 
 // o_file__wav.o_file.a_n_u8__after_header = new Uint8Array(new Array(100).fill(0))
 
-let a_s_name_file = [
-    './CantinaBand60.wav', 
-    './BabyElephantWalk60.wav', 
-    './ImperialMarch60.wav', 
-    './PinkPanther60.wav',
-    './y2mate.com - Zelda Chill Fairy Fountain Mikel Lofi Remix.wav'
-]
-for(let s of a_s_name_file){
+// let a_s_name_file = [
+//     './CantinaBand60.wav', 
+//     './BabyElephantWalk60.wav', 
+//     './ImperialMarch60.wav', 
+//     './PinkPanther60.wav',
+//     './y2mate.com - Zelda Chill Fairy Fountain Mikel Lofi Remix.wav'
+// ]
+// for(let s of a_s_name_file){
 
-    let a_n_u8__file = await Deno.readFile(s);
-    let o_file__wav = f_o_file__wav__decode_from_a_n_u8_file(
-        a_n_u8__file,
-        s
-    );
-    f_o_image_from_o_file__wav(o_file__wav, 16, 9)
+//     let a_n_u8__file = await Deno.readFile(s);
+//     let o_file__wav = f_o_file__wav__decode_from_a_n_u8_file(
+//         a_n_u8__file,
+//         s
+//     );
+//     f_o_image_from_o_file__wav(o_file__wav, 16, 9)
+// }
+
+export {
+    f_o_file__wav__from_a_n_u8__after_header, 
+    f_o_file__wav__from_a_n_u8, 
+    f_o_file__wav__from_a_n_u8__fetch_from_s_url
 }

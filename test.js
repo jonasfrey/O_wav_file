@@ -5,7 +5,6 @@ md*/
 //```javascript
 import { O_wav_file } from "./O_wav_file.module.js";
 //```
-
 // //md ## read/open file
 // //```javascript
 // var o_wav_file = new O_wav_file();

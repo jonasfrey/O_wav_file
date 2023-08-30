@@ -270,6 +270,19 @@ class O_file__wav{
             )
         ]
 
+        let f_update_n_seconds_duration = function(o_file){
+
+            let n_bytes_per_sample = (o_file.n_bits_per_sample /8)
+            if(o_file.a_n_u8__after_header){
+
+                let n_samples_per_channel = (o_file.a_n_u8__after_header.length / n_bytes_per_sample) / o_file.n_channels;
+                let n_seconds_for_samples_per_channel = n_samples_per_channel / o_file.n_samples_per_second_per_channel;
+                // console.log('n_seconds_for_samples_per_channel')
+                o_self.n_seconds_duration = n_seconds_for_samples_per_channel
+                // console.log(n_seconds_for_samples_per_channel)
+            }
+        }
+
         this.o_file = new O_file(
             'wav file', 
             'a file containing raw audio data', 
@@ -282,14 +295,8 @@ class O_file__wav{
                 'audio/x-wav',
             ],
             a_o_byte_offset_property__header, 
-            (o_file)=>{
-                let n_bytes_per_sample = (o_file.n_bits_per_sample /8)
-
-                let n_samples_per_channel = (o_file.a_n_u8__after_header.length / n_bytes_per_sample) / o_file.n_channels;
-                let n_seconds_for_samples_per_channel = n_samples_per_channel / o_file.n_samples_per_second_per_channel;
-                // console.log('n_seconds_for_samples_per_channel')
-                o_self.n_duration_seconds = n_seconds_for_samples_per_channel
-                // console.log(n_seconds_for_samples_per_channel)
+            (o_file, s_property)=>{
+                f_update_n_seconds_duration(o_file)
             }
         );
 
@@ -303,7 +310,7 @@ class O_file{
         a_s_extension, 
         a_s_mime_type, 
         a_o_byte_offset_property__header,
-        f_callback_after_set_a_n_u8 = ()=>{}
+        f_callback_after_set_property = (o_file, s_property)=>{}, 
     ){
         let o_self = this;
 
@@ -312,6 +319,7 @@ class O_file{
         this.a_s_extension = a_s_extension 
         this.a_s_mime_type = a_s_mime_type
         this.a_o_byte_offset_property__header = a_o_byte_offset_property__header
+        this.f_callback_after_set_property = f_callback_after_set_property 
         this.n_file_header_end_byte_index = this.a_o_byte_offset_property__header.reduce(
             (n, o)=>{
                 return n+o.n_bytes_ceiled_to_multiple_of_8
@@ -346,6 +354,7 @@ class O_file{
                         o.f_set_value(value);
 
                         o.f_callback_after_set(o, o_self);
+                        o_self.f_callback_after_set_property(o_self, o.s_name);
 
                     }
                 }
@@ -366,7 +375,7 @@ class O_file{
                     this._a_n_u8 = array;
                     f_update_a_o_byte_offset_property__header()
                     
-                    f_callback_after_set_a_n_u8(o_self);
+                    o_self.f_callback_after_set_property(o_self, 'a_n_u8');
 
                 }
             }
@@ -397,7 +406,7 @@ class O_file{
                         this.n_file_header_end_byte_index+
                         array.length
                     );
-                    a_n_u8.set(this.a_n_u8);
+                    a_n_u8.set(this.a_n_u8.subarray(0, this.n_file_header_end_byte_index));
                     a_n_u8.set(array, this.n_file_header_end_byte_index);
                     
                     this.a_n_u8 = a_n_u8
