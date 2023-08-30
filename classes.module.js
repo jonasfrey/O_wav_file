@@ -106,8 +106,11 @@ class O_byte_offset_property{
 
 class O_file__wav{
     constructor(
-
+        s_name = 'file.wav'
     ){
+        let o_self = this
+        this.s_name = s_name;
+
         let a_o_byte_offset_property__header = [
             new O_byte_offset_property(
                 's_riff_mark',
@@ -278,7 +281,16 @@ class O_file__wav{
                 'audio/x-pn-wav',
                 'audio/x-wav',
             ],
-            a_o_byte_offset_property__header
+            a_o_byte_offset_property__header, 
+            (o_file)=>{
+                let n_bytes_per_sample = (o_file.n_bits_per_sample /8)
+
+                let n_samples_per_channel = (o_file.a_n_u8__after_header.length / n_bytes_per_sample) / o_file.n_channels;
+                let n_seconds_for_samples_per_channel = n_samples_per_channel / o_file.n_samples_per_second_per_channel;
+                // console.log('n_seconds_for_samples_per_channel')
+                o_self.n_duration_seconds = n_seconds_for_samples_per_channel
+                // console.log(n_seconds_for_samples_per_channel)
+            }
         );
 
 
@@ -291,6 +303,7 @@ class O_file{
         a_s_extension, 
         a_s_mime_type, 
         a_o_byte_offset_property__header,
+        f_callback_after_set_a_n_u8 = ()=>{}
     ){
         let o_self = this;
 
@@ -352,12 +365,9 @@ class O_file{
                 set(array) {
                     this._a_n_u8 = array;
                     f_update_a_o_byte_offset_property__header()
-                    let n_bytes_per_sample = (this.n_bits_per_sample /8)
                     
-                    let n_samples_per_channel = (this.a_n_u8__after_header.length / n_bytes_per_sample) / this.n_channels;
-                    let n_seconds_for_samples_per_channel = n_samples_per_channel / this.n_samples_per_second_per_channel;
-                    console.log('n_seconds_for_samples_per_channel')
-                    console.log(n_seconds_for_samples_per_channel)
+                    f_callback_after_set_a_n_u8(o_self);
+
                 }
             }
         );

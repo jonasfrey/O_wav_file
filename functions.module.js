@@ -352,6 +352,28 @@ let f_s_data_url_image__from_o_file__wav = async function(
     // }
 
 
+let f_fetch_a_n_u8 = async function(
+    s_url
+){
+    return new Promise(
+        (f_res)=>{
+            fetch(s_url).then(
+                o_resp =>{
+                    console.log("is the data here already on my local machine?") // here
+                    // o_resp.body()
+        
+                    o_resp.arrayBuffer().then(
+                        (o_buffer)=>{
+                            return f_resolve(new Uint8Array());
+                        }
+                    );
+                    
+                }
+            )
+        }
+    )
+}
+
 
 let f_test = async function(){
 
@@ -396,61 +418,86 @@ let f_test = async function(){
     await Deno.writeFile("test.wav", o_file__wav.o_file.a_n_u8, { mode: 0o644 });
 }
 
-
+let f_o_file__wav__decode_from_a_n_u8_url = async function(s_url){
+    return f_fetch_a_n_u8(s_url).then(
+        (a_n_u8) =>{
+            let s_name_file = s_url.split("/").pop();
+        
+            let o_file__wav = new O_file__wav(s_name_file);
+            o_file__wav.o_file.a_n_u8 = a_n_u8
+            return o_file__wav
+        }
+    )
+}
 let f_o_file__wav__decode_from_a_n_u8_file = function(
-    a_n_u8__file
+    a_n_u8__file, 
+    s_name_file = ''
 ){
-    let o_file__wav = new O_file__wav();
+    let o_file__wav = new O_file__wav(s_name_file);
     o_file__wav.o_file.a_n_u8 = a_n_u8__file
     return o_file__wav
 }
 let f_o_image_from_o_file__wav = async function(
-    o_file__wav
+    o_file__wav, 
+    n_aspect_ratio_x, 
+    n_aspect_ratio_y, 
+    // n_aspect_ratio_x_to_y = '1'
 ){
-    let n_sqrt_closest = parseInt(Math.sqrt((o_file__wav.o_file.a_n_u8__after_header.length/4)));
-    // console.log(o_file__wav.o_file.a_n_u8__after_header.length/4)
-    // console.log(Math.sqrt(o_file__wav.o_file.a_n_u8__after_header.length/4))
-    const o_canvas = createCanvas(n_sqrt_closest, n_sqrt_closest);
+    let n_aspect_ratio_x_to_y = n_aspect_ratio_x / n_aspect_ratio_y;
+    let n_possible_pixels = (o_file__wav.o_file.a_n_u8__after_header.length/4)
+    let n_x = Math.sqrt(n_possible_pixels*n_aspect_ratio_x_to_y);
+    let n_y = n_x / n_aspect_ratio_x_to_y;
+    n_x = Math.ceil(n_x);
+    n_y = Math.ceil(n_y);
+    
+    const o_canvas = createCanvas(n_x, n_y);
     const o_ctx = o_canvas.getContext("2d");
-    let a_n_u8__image_data = o_file__wav.o_file.a_n_u8.subarray(0, n_sqrt_closest*n_sqrt_closest*4)
-    // let a_n_u8__image_data = new Uint8Array(n_sqrt_closest*n_sqrt_closest);
-    // let n_idx_sample = 0;
-    // while(n_idx_sample < n_sqrt_closest*n_sqrt_closest){
-    //     // console.log(o_file__wav.o_file.a_n_u8__after_header[n_idx_sample]);
 
-    //     // let n_sample = o_file__wav.o_file.a_n_u8__after_header[n_idx_sample];
-    //     // a_n_u8__image_data[n_idx_sample*4+0] = n_sample
-    //     // a_n_u8__image_data[n_idx_sample*4+1] = n_sample
-    //     // a_n_u8__image_data[n_idx_sample*4+2] = n_sample
-    //     // a_n_u8__image_data[n_idx_sample*4+3] = 255
-
-    //     //color image
-    //     a_n_u8__image_data[n_idx_sample] = o_file__wav.o_file.a_n_u8[n_idx_sample++];
-    //     a_n_u8__image_data[n_idx_sample] = o_file__wav.o_file.a_n_u8[n_idx_sample++];
-    //     a_n_u8__image_data[n_idx_sample] = o_file__wav.o_file.a_n_u8[n_idx_sample++];
-    //     a_n_u8__image_data[n_idx_sample] = o_file__wav.o_file.a_n_u8[n_idx_sample++];
-    //     // a_n_u8__image_data[n_idx_sample*4+3] = o_file__wav.o_file.a_n_u8__after_header[n_idx_sample++];
-    // }
-
+    let  f_draw_text_outlined = function(o_ctx, s_text, n_x, n_y) {
+        o_ctx.strokeStyle = 'black';
+        o_ctx.lineWidth = 8;
+        o_ctx.strokeText(s_text, n_x,n_y);
+        o_ctx.fillStyle = 'white';
+        o_ctx.fillText(s_text, n_x, n_y);
+    }
 
     const o_image_data = o_ctx.createImageData(o_canvas.width, o_canvas.height);
 
     // Copy your data into the ImageData object
-    o_image_data.data.set(a_n_u8__image_data);
+    o_image_data.data.set(o_file__wav.o_file.a_n_u8);
 
     o_ctx.putImageData(o_image_data, 0, 0);
 
-    await Deno.writeFile(`${new Date().getTime()}.png`, o_canvas.toBuffer());
+    o_ctx.font = '18px Sans-serif';
+    let s_name_file = o_file__wav.s_name.split("/").pop();
+
+    f_draw_text_outlined(
+        o_ctx,
+        `${s_name_file}, ${parseInt(o_file__wav.n_duration_seconds)} seconds, ${n_aspect_ratio_x}:${n_aspect_ratio_y}`, 
+        36, 
+        36
+    )
+
+    await Deno.writeFile(`${new Date().getTime()}_${s_name_file}_${n_aspect_ratio_x}to${n_aspect_ratio_y}.png`, o_canvas.toBuffer());
 
 }
 
 
 // o_file__wav.o_file.a_n_u8__after_header = new Uint8Array(new Array(100).fill(0))
 
+let a_s_name_file = [
+    './CantinaBand60.wav', 
+    './BabyElephantWalk60.wav', 
+    './ImperialMarch60.wav', 
+    './PinkPanther60.wav',
+    './y2mate.com - Zelda Chill Fairy Fountain Mikel Lofi Remix.wav'
+]
+for(let s of a_s_name_file){
 
-let a_n_u8__file = await Deno.readFile("./BabyElephantWalk60.wav");
-let o_file__wav = f_o_file__wav__decode_from_a_n_u8_file(
-    a_n_u8__file
-);
-console.log(o_file__wav.o_file.a_n_u8__after_header)
-f_o_image_from_o_file__wav(o_file__wav)
+    let a_n_u8__file = await Deno.readFile(s);
+    let o_file__wav = f_o_file__wav__decode_from_a_n_u8_file(
+        a_n_u8__file,
+        s
+    );
+    f_o_image_from_o_file__wav(o_file__wav, 16, 9)
+}
