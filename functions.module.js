@@ -1,5 +1,5 @@
 
-import { O_byte_offset_property, O_file } from "./classes.module.js";
+import { O_byte_offset_property, O_file, O_file__wav} from "./classes.module.js";
 
 let f_o_file__wav__decode_a_n_u8__wav = [
     new O_byte_offset_property(
@@ -236,12 +236,12 @@ let f_o_file__wav__decode_a_n_u8 = function(
     return o_file__wav
 }
 
-let a_n_u8 = await Deno.readFile("./wav_files/ImperialMarch60.wav");
-let o_file__wav = f_o_file__wav__decode_a_n_u8(a_n_u8);
+// let a_n_u8 = await Deno.readFile("./wav_files/ImperialMarch60.wav");
+// let o_file__wav = f_o_file__wav__decode_a_n_u8(a_n_u8);
 
-console.log(o_file__wav.a_a_n_rms1000samples__channels)
+// console.log(o_file__wav.a_a_n_rms1000samples__channels)
 
-import { createCanvas } from "https://deno.land/x/canvas/mod.ts";
+import {  createCanvas } from "https://deno.land/x/canvas/mod.ts";
 
 
 let f_s_data_url_image__from_o_file__wav = async function(
@@ -281,7 +281,7 @@ let f_s_data_url_image__from_o_file__wav = async function(
     await Deno.writeFile("melol.png", o_canvas.toBuffer());
 
 }
-f_s_data_url_image__from_o_file__wav(o_file__wav, 0.0, .08, 1000, 200);
+//f_s_data_url_image__from_o_file__wav(o_file__wav, 0.0, .08, 1000, 200);
 
 // console.log(o_file__wav)
 
@@ -350,3 +350,107 @@ f_s_data_url_image__from_o_file__wav(o_file__wav, 0.0, .08, 1000, 200);
     //     }
     //     return `${s_type_abb}${this.n_bits_ceiled_to_multiple_of_8}`
     // }
+
+
+
+let f_test = async function(){
+
+    let o_file__wav = new O_file__wav();
+
+    console.log(o_file__wav.o_file.a_n_u8__header)
+
+    // o_file__wav.o_file.a_n_u8 = new Uint8Array(
+    //     new Array(100).fill(0).map(
+    //     ()=>{
+    //         return parseInt(Math.random()*255)
+    //     }
+    //     )
+    // )
+
+    o_file__wav.o_file.n_channels = 2
+    o_file__wav.o_file.n_bits_per_sample = 8//not yet working
+
+    console.log(o_file__wav.o_file.a_n_u8__header)
+
+    o_file__wav.o_file.a_n_u8__after_header = new Uint8Array(
+        new Array(1000000).fill(0).map(
+        (v,n_idx)=>{
+            if(parseInt(n_idx)%2 == 1){
+            // if(parseInt(n_idx*.5)%2 == 1){
+                return 0
+            } 
+            return Math.random()*255
+        }
+        )
+    )
+    console.log(o_file__wav.o_file.a_n_u8__header)
+
+    console.log(o_file__wav.o_file.n_file_size_in_bytes_minus_8_bytes)
+    console.log(o_file__wav.o_file.a_n_u8__header)
+    console.log(o_file__wav.o_file.n_file_size_in_bytes_minus_8_bytes)
+
+    // console.log(o_file__wav.n_file_size_in_bytes_minus_8_bytes)
+
+    // console.log(o_file__wav.o_file.a_n_u8)
+    // console.log(o_file__wav.n_file_size_in_bytes_minus_8_bytes)
+    await Deno.writeFile("test.wav", o_file__wav.o_file.a_n_u8, { mode: 0o644 });
+}
+
+
+let f_o_file__wav__decode_from_a_n_u8_file = function(
+    a_n_u8__file
+){
+    let o_file__wav = new O_file__wav();
+    o_file__wav.o_file.a_n_u8 = a_n_u8__file
+    return o_file__wav
+}
+let f_o_image_from_o_file__wav = async function(
+    o_file__wav
+){
+    let n_sqrt_closest = parseInt(Math.sqrt((o_file__wav.o_file.a_n_u8__after_header.length/4)));
+    // console.log(o_file__wav.o_file.a_n_u8__after_header.length/4)
+    // console.log(Math.sqrt(o_file__wav.o_file.a_n_u8__after_header.length/4))
+    const o_canvas = createCanvas(n_sqrt_closest, n_sqrt_closest);
+    const o_ctx = o_canvas.getContext("2d");
+    let a_n_u8__image_data = o_file__wav.o_file.a_n_u8.subarray(0, n_sqrt_closest*n_sqrt_closest*4)
+    // let a_n_u8__image_data = new Uint8Array(n_sqrt_closest*n_sqrt_closest);
+    // let n_idx_sample = 0;
+    // while(n_idx_sample < n_sqrt_closest*n_sqrt_closest){
+    //     // console.log(o_file__wav.o_file.a_n_u8__after_header[n_idx_sample]);
+
+    //     // let n_sample = o_file__wav.o_file.a_n_u8__after_header[n_idx_sample];
+    //     // a_n_u8__image_data[n_idx_sample*4+0] = n_sample
+    //     // a_n_u8__image_data[n_idx_sample*4+1] = n_sample
+    //     // a_n_u8__image_data[n_idx_sample*4+2] = n_sample
+    //     // a_n_u8__image_data[n_idx_sample*4+3] = 255
+
+    //     //color image
+    //     a_n_u8__image_data[n_idx_sample] = o_file__wav.o_file.a_n_u8[n_idx_sample++];
+    //     a_n_u8__image_data[n_idx_sample] = o_file__wav.o_file.a_n_u8[n_idx_sample++];
+    //     a_n_u8__image_data[n_idx_sample] = o_file__wav.o_file.a_n_u8[n_idx_sample++];
+    //     a_n_u8__image_data[n_idx_sample] = o_file__wav.o_file.a_n_u8[n_idx_sample++];
+    //     // a_n_u8__image_data[n_idx_sample*4+3] = o_file__wav.o_file.a_n_u8__after_header[n_idx_sample++];
+    // }
+
+
+    const o_image_data = o_ctx.createImageData(o_canvas.width, o_canvas.height);
+
+    // Copy your data into the ImageData object
+    o_image_data.data.set(a_n_u8__image_data);
+
+    o_ctx.putImageData(o_image_data, 0, 0);
+
+    await Deno.writeFile(`${new Date().getTime()}.png`, o_canvas.toBuffer());
+
+}
+
+
+// o_file__wav.o_file.a_n_u8__after_header = new Uint8Array(new Array(100).fill(0))
+
+
+let a_n_u8__file = await Deno.readFile("./BabyElephantWalk60.wav");
+let o_file__wav = f_o_file__wav__decode_from_a_n_u8_file(
+    a_n_u8__file
+);
+console.log(o_file__wav.o_file.a_n_u8__after_header)
+f_o_image_from_o_file__wav(o_file__wav)

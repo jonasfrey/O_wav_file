@@ -407,47 +407,9 @@ class O_file{
 
 }
 
-let o_file__wav = new O_file__wav();
-console.log(o_file__wav.o_file.a_n_u8__header)
-
-// o_file__wav.o_file.a_n_u8 = new Uint8Array(
-//     new Array(100).fill(0).map(
-//     ()=>{
-//         return parseInt(Math.random()*255)
-//     }
-//     )
-// )
-o_file__wav.o_file.n_channels = 2
-o_file__wav.o_file.n_bits_per_sample = 8//not yet working
-console.log(o_file__wav.o_file.a_n_u8__header)
-
-o_file__wav.o_file.a_n_u8__after_header = new Uint8Array(
-    new Array(1000000).fill(0).map(
-    (v,n_idx)=>{
-        if(parseInt(n_idx)%2 == 1){
-        // if(parseInt(n_idx*.5)%2 == 1){
-            return 0
-        } 
-        return Math.random()*255
-    }
-    )
-)
-console.log(o_file__wav.o_file.a_n_u8__header)
-
-
-console.log(o_file__wav.o_file.n_file_size_in_bytes_minus_8_bytes)
-console.log(o_file__wav.o_file.a_n_u8__header)
-console.log(o_file__wav.o_file.n_file_size_in_bytes_minus_8_bytes)
-
-// console.log(o_file__wav.n_file_size_in_bytes_minus_8_bytes)
-
-// console.log(o_file__wav.o_file.a_n_u8)
-// console.log(o_file__wav.n_file_size_in_bytes_minus_8_bytes)
-await Deno.writeFile("test.wav", o_file__wav.o_file.a_n_u8, { mode: 0o644 });
-
-// o_file__wav.o_file.a_n_u8__after_header = new Uint8Array(new Array(100).fill(0))
 
 export {
     O_file, 
-    O_byte_offset_property
+    O_byte_offset_property, 
+    O_file__wav
 }
